@@ -2,7 +2,7 @@
 *A Discord bot designed for Repl.it. Generates new messages using Markov chains from user message history*
 
 
-Designed to work on Repl.it running on a Flask server.
+Designed to work on Repl.it, running with a Flask server.
 
 Paste the private code for your Discord bot in the .env file directly. It should look like this:
 ```
