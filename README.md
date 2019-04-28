@@ -8,14 +8,14 @@ Paste the private code for your Discord bot in the .env file directly. It should
 >DISCORD_BOT_SECRET=T1bAcYNlVgqOHnbT6PbCgqOH.yVzxJ.wMHZ-pb2HXESAeiv0mUcXXak5_M
 
 ## Commands
-*!mv, !markov [USER]... [OPTION]...
-  *Basic syntax
-*-s --startswith [STR]
-  *Chain starting word
-*-l, --limit [INT]
-  *Maximum chain length - set to 14 by default
-*"-h, --history [INT]
-  *Search history in No. of messages - set to 3000 by default
+* !mv, !markov [USER]... [OPTION]...
+  * Basic syntax
+* -s, --startswith [STR]
+  * Chain starting word
+* -l, --limit [INT]
+  * Maximum chain length - set to 14 by default
+* -h, --history [INT]
+  * Search history in No. of messages - set to 3000 by default
   
 ## Example commands:
 >!markov -s Heiroglyph -h 5000
