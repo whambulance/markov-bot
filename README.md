@@ -13,8 +13,8 @@ DISCORD_BOT_SECRET=T1bAcYNlVgqOHnbT6PbCgqOH.yVzxJ.wMHZ-pb2HXESAeiv0mUcXXak5_M
   * Basic syntax
 * -s, --startswith [STR]
   * Chain starting word
-* -l, --limit [INT]
-  * Maximum chain length - set to 14 by default
+* -l, --length [INT]
+  * Chain length - Random length between 1 - 14 by default, Max: 100
 * -h, --history [INT]
   * Search history in No. of messages - set to 3000 by default
   
