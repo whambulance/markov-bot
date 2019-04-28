@@ -18,14 +18,13 @@ Paste the private code for your Discord bot in the .env file directly. It should
   *Search history in No. of messages - set to 3000 by default
   
 ## Example commands:
->!markov -s Around -h 5000
+>!markov -s Heiroglyph -h 5000
 >
->Generates a chain for you, beginning with word "Around", and searching backwards 5,000 messages
+>Generates a chain for you, beginning with word "Heiroglyph", and searching through 5,000 messages
 
 >!mk PaulAtreides --limit 15 -h 15000
 >
->Generates a chain for user "PaulAtreides", limiting the markov chain to 15 words, and searching backwards 15,000 messages.
+>Generates a chain for user "PaulAtreides", limiting the markov chain to 15 words, and searching through 15,000 messages.
 
-This is an example of the bot constructing Markov chains, using paragraphs pasted out of the Fellowship of the Ring
+This is an example of the bot constructing Markov chains, using paragraphs pasted out of the Fellowship of the Ring. This was cut short by the default chain length
 ![markov-bot test with LOTR paragraphs](https://raw.githubusercontent.com/whambulance/markov-bot/master/markovtest1.png)
-
