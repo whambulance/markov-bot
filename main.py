@@ -31,7 +31,7 @@ def makeMarkovChain(markovList, startword, length):
 
     #print (markovList)
     word = random.choice(markovList[word])
-    while len(chain) < 14 and word != "<end>":
+    while len(chain) < length and word != "<end>":
         chain.append(word)
         word = random.choice(markovList[word])
     return chain
@@ -86,7 +86,7 @@ async def on_message(message):
                 mlength = int(splitMessage[index+1])
             elif i == "-h" or i == "--history":
                 hlength = int(splitMessage[index+1]) 
-
+        
         if user != "":
             messmember = getUser(message, user)
         else:
