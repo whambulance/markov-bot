@@ -1,12 +1,14 @@
 import discord
 import os
-from keep_alive import keep_alive
+#from keep_alive import keep_alive
 from markov_update import createMarkovJSONFull
 from markov_update import updateMarkovJSONFull
 from markov_update import createMarkovJSONUser
 from markov_update import updateMarkovJSONUser
 from markov_chain import getMarkovJSONDict
 from markov_chain import createMarkovChain
+
+token = open("token.txt", "r").read()
 
 client = discord.Client()
 
@@ -41,7 +43,6 @@ async def on_message(message):
     elif ("help" in str(message.content).lower() or  "aid" in str(message.content).lower() or  "hand" in str(message.content).lower() or  "assist" in str(message.content).lower()) and ("markov" in str(message.content).lower() or "mk" in str(message.content).lower()):
         embed = sendHelpMessage(message)
         await message.channel.send(embed=embed)
-
     elif message.content.startswith("!mk ") or message.content.startswith("!markov ") or message.content == "!mk" or message.content == "!markov":
         user = ""
         startswith = ""
@@ -81,7 +82,7 @@ async def on_message(message):
             await discord.Member.edit(me, nick=newnick)
             await message.channel.send(markovChain)
             await discord.Member.edit(me, nick="")
-
+    
     elif ("!mkjson" in str(message.content).lower()):
         splitMessage = message.content.split()
         print ("$:" + message.content[1:999] + " by " + message.author.display_name)
@@ -99,11 +100,11 @@ async def on_message(message):
                     msgUser = getUser(message, splitMessage[index+1])
                     await createMarkovJSONUser(message, msgUser)
                     return
-                elif i == "updatechannel":
-                    print("$:<admin-json-command-updatechannel>")
-                    msgCount = None
-                    await updateMarkovJSONFull(message, msgCount)
-                    return
+                #elif i == "updatechannel":
+                    #print("$:<admin-json-command-updatechannel>")
+                    #msgCount = None
+                    #await updateMarkovJSONFull(message, msgCount)
+                    #return
                 elif i == "updateuser":
                     print("$:<admin-json-command-updateuser>")
                     msgUser = getUser(message, splitMessage[index+1])
@@ -116,6 +117,5 @@ async def on_message(message):
         markovJSONDict =  getMarkovJSONDict(message, message.author)
         createMarkovChain(markovJSONDict, "", 0)
 
-keep_alive()
-token = os.environ.get("DISCORD_BOT_SECRET")
+#keep_alive()
 client.run(token)

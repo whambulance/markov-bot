@@ -4,6 +4,7 @@ import datetime
 import os
 
 client = discord.client
+dir_path = os.path.dirname(os.path.realpath(__file__)) + "\\jsons\\"
 
 # createMarkovJSONFull
 # Grabs the specified number of messages (0 = all) from the specified message's channel. It creates a seperate Markov Dictionary JSON file for each user. Should overwrite existing files completely. With larger servers that have large message counts, this often takes a long time
@@ -38,8 +39,7 @@ async def createMarkovJSONFull(message, messageCount):
                 markovDict["<items>"][line1].append(line2)
             else:
                 markovDict["<items>"][line1] = [line2]
-        jsonFileName = str(key) + "-" + str(message.guild.id) + "-" + str(
-            message.channel.id) + ".json"
+        jsonFileName = dir_path + str(key) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
         with open(jsonFileName, "w") as jsonFile:
             jsonFile.truncate(0)
             json.dump(markovDict, jsonFile)
@@ -56,19 +56,29 @@ async def createMarkovJSONFull(message, messageCount):
 async def updateMarkovJSONFull(message, messageCount):
     userMessageList = {}
     currDateTime = datetime.datetime.now().isoformat()
+    jsonList = {}
 
     for mkUser in message.guild.members:
-        jsonFileName = str(mkUser.id) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
+        jsonFileName = dir_path + str(mkUser.id) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
         if os.path.isfile(jsonFileName):
             with open(jsonFileName) as jsonFile:
                 i = json.load(jsonFile)
-                jsonList = i    
+                jsonList[mkUser.id] = i   
 
     print("$:Beginning channel history processing")
 
     async for item in message.channel.history(limit=10000):
         if "!markov" not in str(item.content) and "!mk" not in str(item.content):
-            if str(item.author.id) in jsonList:
+            exists = bool
+            try:
+                if jsonList[item.author.id] != "":
+                    exists = True
+                    print (jsonList[str(item.author.id)])
+                    print (jsonList[str(item.author.id)]["<historyDateTime>"])
+                    print (jsonList[str(item.author.id)]["<historyDateTime>"][0])
+            except:
+                exists = False
+            if exists:
                 if item.created_at.isoformat() > jsonList[str(item.author.id)]["<historyDateTime>"][0]:
                     next
                 elif str(item.author.id) in userMessageList:
@@ -79,9 +89,10 @@ async def updateMarkovJSONFull(message, messageCount):
     print("$:Channel history processing complete")
 
     for key in userMessageList:
+        print(key)
         markovIterable = userMessageList[key].split()
         jsonList[key]["<historyDateTime>"] = currDateTime
-        jsonFileName = str(key) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
+        jsonFileName = dir_path + str(key) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
         for i in range(len(markovIterable) - 1):
             line1 = markovIterable[i]
             line2 = markovIterable[i + 1]
@@ -105,7 +116,7 @@ async def updateMarkovJSONFull(message, messageCount):
 async def createMarkovJSONUser(message, user):
     userMessageList = ""
     currDateTime = datetime.datetime.now().isoformat()
-    jsonFileName = str(user.id) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
+    jsonFileName = dir_path + str(user.id) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
     if user == "":
         user = message.author
 
@@ -143,7 +154,7 @@ async def createMarkovJSONUser(message, user):
 async def updateMarkovJSONUser(message, user):
     userMessageList = ""
     currDateTime = datetime.datetime.now().isoformat()
-    jsonFileName = str(message.author.id) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
+    jsonFileName = dir_path + str(message.author.id) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
 
     with open(jsonFileName) as jsonFile:
         i = json.load(jsonFile)
@@ -158,7 +169,7 @@ async def updateMarkovJSONUser(message, user):
 
     markovIterable = userMessageList.split()
     jsonList["<historyDateTime>"] = currDateTime
-    jsonFileName = str(user.id) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
+    jsonFileName = dir_path + str(user.id) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
     for i in range(len(markovIterable) - 1):
         line1 = markovIterable[i]
         line2 = markovIterable[i + 1]

@@ -5,12 +5,13 @@ import os
 from markov_update import createMarkovJSONUser
 
 client = discord.Client()
+dir_path = os.path.dirname(os.path.realpath(__file__)) + "\\jsons\\"
 
 # getMarkovJSONDict
 # Attempts to get a JSON dictionary for the specified user, getting the channel from the message sent. If it cannot find one, it will then call createMarkovJSONUser to create one - then use that.
 
 def getMarkovJSONDict(message, user):
-    jsonFileName = str(user.id) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
+    jsonFileName = dir_path + str(user.id) + "-" + str(message.guild.id) + "-" + str(message.channel.id) + ".json"
     if os.path.isfile(jsonFileName):
         next
     else:
