@@ -1,67 +1,14 @@
 import discord
 import os
-import random
 from keep_alive import keep_alive
+from markov_update import createMarkovJSONFull
+from markov_update import updateMarkovJSONFull
+from markov_update import createMarkovJSONUser
+from markov_update import updateMarkovJSONUser
+from markov_chain import getMarkovJSONDict
+from markov_chain import createMarkovChain
 
 client = discord.Client()
-
-def makeMarkovList(corpus):
-    data = {}
-    for i in range(len(corpus)-1):
-        line1 = corpus[i]
-        line2 = corpus[i+1]
-        if line1 != "<end>" and line2 != "<end>":
-            if line1 in data:
-                data[line1].append(line2)
-            else:
-                data[line1] = [line2]
-    return data	
-
-def makeMarkovChain(markovList, startword, length):
-    word = ""
-    if startword == "" or startword not in markovList:
-        while word[:1].islower() or word == "":
-            word = random.choice(list(markovList))
-            if "!m" not in word and "<end>" not in word and "@" not in word:
-                continue
-            else:
-                word = ""
-    else:
-        word = startword
-    
-    chain = []
-    del markovList["!mk"]
-    del markovList["!markov"]
-    if length > 1:
-        while len(chain) < length:
-            chain = [word]
-            newword = random.choice(markovList[word])
-            while len(chain) < length:
-                try:
-                    chain.append(newword)
-                    newword = random.choice(markovList[newword])
-                except:
-                    continue
-    else:
-        randomLen = random.randint(1,14)
-        while len(chain) < randomLen:
-            chain = [word]
-            newword = random.choice(markovList[word])
-            while len(chain) < randomLen:
-                try:
-                    chain.append(newword)
-                    newword = random.choice(markovList[newword])
-                except:
-                    continue
-    returnChain = " ".join(chain)
-    return returnChain
-
-def makeMarkov(string, startword, user, mlength):
-    passage = string.split()
-    mList1 = makeMarkovList(passage)
-    mChain1 = makeMarkovChain(mList1, startword, mlength)
-    return mChain1
-    #return 
 
 def getUser(message, userstring):
     user = ""
@@ -82,21 +29,24 @@ def sendHelpMessage(message):
     embed.add_field(name="!mv, !markov [USER]... [OPTION]...",value="Basic syntax", inline=True)
     embed.add_field(name="-s --startswith [STR]", value="Chain starting word", inline=False)
     embed.add_field(name="-l, --length [INT]", value="Chain length (def: rand 1 - 14) (max: 100)", inline=True)
-    embed.add_field(name="-h, --history [INT]", value="Search history in No. of messages (def: 3000, max:50000)", inline=True)
+    embed.add_field(name="!mkjson",value="Update your Markov JSON Dictionary", inline=True)
     return embed
 
 @client.event
 async def on_message(message):
+
     if message.author.bot:
         exit
+
     elif ("help" in str(message.content).lower() or  "aid" in str(message.content).lower() or  "hand" in str(message.content).lower() or  "assist" in str(message.content).lower()) and ("markov" in str(message.content).lower() or "mk" in str(message.content).lower()):
         embed = sendHelpMessage(message)
         await message.channel.send(embed=embed)
+
     elif message.content.startswith("!mk ") or message.content.startswith("!markov ") or message.content == "!mk" or message.content == "!markov":
         user = ""
         startswith = ""
-        mlength = 0
-        hlength = 3000
+        length = 0
+
         splitMessage = message.content.split()
         for index, i in enumerate(splitMessage):
             if i == "-s" or i == "--startswith":
@@ -104,46 +54,68 @@ async def on_message(message):
             elif index == 1 and "-" not in i:
                 user = i
             elif i == "-l" or i == "--length":
-                mlength = int(splitMessage[index+1])
-            elif i == "-h" or i == "--history":
-                hlength = int(splitMessage[index+1]) 
+                length = int(splitMessage[index+1])
         
         if user != "":
-            messmember = getUser(message, user)
+            messageUser = getUser(message, user)
         else:
-            messmember = message.author
-        print ("$:makeMarkov -u " + messmember.display_name + " -s " + startswith + " -l " + str(mlength) + " -h " + str(hlength))
+            messageUser = message.author
+        if length > 100:
+            length = 100
 
-        if hlength > 50000:
-            hlength = 50000
-        if mlength > 100:
-            mlength = 100
+        print ("$:makeMarkov -u " + messageUser.display_name + " -s " + startswith + " -l " + str(length))
 
-        list = ""
-        async for item in message.channel.history(limit=hlength):
-            if item.author == messmember:
-                list += (str(item.content) + " <end> ")
-        
-        markovChain = makeMarkov (list, startswith, user, mlength)
+        userJSONDict = getMarkovJSONDict(message, messageUser)
+        markovChain = createMarkovChain(userJSONDict, startswith, length)
 
         if markovChain != "":
             print ("Printed: " + str(markovChain))
             print ("")
-            if messmember.display_name[0].islower():
-                newnick = messmember.display_name[0:20] + " markov"
-            elif messmember.display_name.isupper():
-                newnick = messmember.display_name[0:20] + " MARKOV"
+            if messageUser.display_name[0].islower():
+                newnick = messageUser.display_name[0:20] + " markov"
+            elif messageUser.display_name.isupper():
+                newnick = messageUser.display_name[0:20] + " MARKOV"
             else:
-                newnick = messmember.display_name[0:20] + " Markov"
+                newnick = messageUser.display_name[0:20] + " Markov"
             me = message.guild.me
             await discord.Member.edit(me, nick=newnick)
-            #markovChain = markovChain.replace("@", "")
             await message.channel.send(markovChain)
             await discord.Member.edit(me, nick="")
 
-    elif ("markov" in str(message.content).lower()) and ("bitch" in str(message.content).lower() or "fuck you" in str(message.content).lower() or "shitty bot" in str(message.content).lower() or "kys" in str(message.content).lower() or "kill yourself" in str(message.content).lower() or "fuck off" in str(message.content).lower()):
-        await message.channel.send("бля сука")
-        
+    elif ("!mkjson" in str(message.content).lower()):
+        splitMessage = message.content.split()
+        print ("$:" + message.content[1:999] + " by " + message.author.display_name)
+        for index, i in enumerate(splitMessage):
+            msgCount = None
+            msgUser = ""
+            if str(message.author.id) == "120242398176477186":
+                if i == "createchannel":
+                    print("$:<admin-json-command-createchannel>")
+                    msgCount = None
+                    await createMarkovJSONFull(message, msgCount)
+                    return
+                elif i == "createuser":
+                    print("$:<admin-json-command-createuser>")
+                    msgUser = getUser(message, splitMessage[index+1])
+                    await createMarkovJSONUser(message, msgUser)
+                    return
+                elif i == "updatechannel":
+                    print("$:<admin-json-command-updatechannel>")
+                    msgCount = None
+                    await updateMarkovJSONFull(message, msgCount)
+                    return
+                elif i == "updateuser":
+                    print("$:<admin-json-command-updateuser>")
+                    msgUser = getUser(message, splitMessage[index+1])
+                    await updateMarkovJSONUser(message, msgUser)
+                    return 
+        await updateMarkovJSONUser(message, message.author)
+
+    elif ("!mktest" in str(message.content).lower()):
+        splitMessage = message.content.split()
+        markovJSONDict =  getMarkovJSONDict(message, message.author)
+        createMarkovChain(markovJSONDict, "", 0)
+
 keep_alive()
 token = os.environ.get("DISCORD_BOT_SECRET")
 client.run(token)
