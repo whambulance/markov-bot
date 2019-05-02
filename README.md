@@ -1,8 +1,7 @@
 # markov-bot
-*A Discord bot designed for Repl.it. Generates new messages using Markov chains from user message history*
+*A Discord bot designed in python. Generates new messages using Markov chains from user message history*
 
-Markov chains are cool, and so is this russian man who impersonates your friends
-
+Markov chains are cool, and so is this russian man who impersonates your friends.
 Paste the private code for your Discord bot in a file called "token.txt" directly. It should look like this:
 ```
 T1bAcYNlVgqOHnbT6PbCgqOH.yVzxJ.wMHZ-pb2HXESAeiv0mUcXXak5_M
@@ -19,14 +18,14 @@ T1bAcYNlVgqOHnbT6PbCgqOH.yVzxJ.wMHZ-pb2HXESAeiv0mUcXXak5_M
   
 ## Examples:
 ```
-!markov -s Heiroglyph -h 5000
-Generates a chain for you, beginning with word "Heiroglyph", and searching through 5,000 messages
+!markov -s Heiroglyph
+Generates a chain for you, beginning with word "Heiroglyph"
 
-!mk PaulAtreides --limit 15 -h 15000
+!mk PaulAtreides --limit 15
 Generates a chain for user "PaulAtreides", limiting the markov chain to 15 words, and searching through 15,000 messages.
 ```
 
-This is an example of the bot constructing Markov chains, using paragraphs pasted out of the Fellowship of the Ring. This was cut short by the default chain length
+This is an example of the bot constructing Markov chains, using paragraphs pasted out of the Fellowship of the Ring. This was cut short by the default chain length:
 ![markov-bot test with LOTR paragraphs](https://raw.githubusercontent.com/whambulance/markov-bot/master/markovtest1.png)
 
 ## Admin Commands
@@ -37,3 +36,15 @@ This is an example of the bot constructing Markov chains, using paragraphs paste
   * Create a JSON Markov Dictionary for the stated user
 * !mkjson updateuser [USER]...
   * Updates the JSON Markov Dictionary for the stated user
+  
+## Examples:
+```
+!mkjson createchannel
+Generates Markov dictionaires for each user, assigned to the channel you post this in
+
+!mkjson createuser PaulAtreides
+Generates a chain for user 'PaulAtreides', assigned to the channel you post this in
+
+!mkjson updateuser PaulAtreides
+Updates an existing chain for user 'PaulAtreides', with messages sent since the JSON Dictionary was created/last updated
+```
