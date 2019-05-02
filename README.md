@@ -26,6 +26,7 @@ Generates a chain for user "PaulAtreides", limiting the markov chain to 15 words
 ```
 
 This is an example of the bot constructing Markov chains, using paragraphs pasted out of the Fellowship of the Ring. This was cut short by the default chain length:
+
 ![markov-bot test with LOTR paragraphs](https://raw.githubusercontent.com/whambulance/markov-bot/master/markovtest1.png)
 
 ## Admin Commands
