@@ -6,6 +6,7 @@ Paste the private code for your Discord bot in a file called "token.txt" directl
 ```
 T1bAcYNlVgqOHnbT6PbCgqOH.yVzxJ.wMHZ-pb2HXESAeiv0mUcXXak5_M
 ```
+(^^ This is a randomly generated one)
 ## User Commands
 * !mk, !markov [USER]... [OPTION]...
   * Basic syntax
